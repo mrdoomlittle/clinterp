@@ -77,14 +77,14 @@ char ** mdl::clinterp::filter(bool ignore) {
     
     ublas::vector<boost::array<std::size_t, 3>> arg_len;
      
-    bool first_time = true, skip = false;
+    bool first_time = true, skip = false, tr = false;;
     for (size_t i = 0; i != this-> term_input.size(); i ++) {
         if (begin_counting == true) {
             if (seporator_mapping[i])  {
                 begin_counting = false;
                 skip = false;
             } else {
-                if (this-> term_input[i] == EQULS) skip = true;
+                if (this-> term_input[i] == EQULS && ! tr) {skip = true; tr = true; }else skip = false;
                 if (!skip) arg_len[arg_point][1] += 1; 
                 if (skip) arg_len[arg_point][2] ++;
             }
@@ -93,7 +93,7 @@ char ** mdl::clinterp::filter(bool ignore) {
         if (seporator_mapping[i] && !seporator_mapping[i + 1]) {
             arg_len.resize(arg_len.size() + 1);
             begin_counting = true;
-          
+            tr = false; 
             if (!first_time) arg_point ++;
             arg_len[arg_point][0] = (i + 1);
 
@@ -106,13 +106,13 @@ char ** mdl::clinterp::filter(bool ignore) {
     this-> current.bi_args_value.resize(arg_len.size());
     std::size_t adr = this-> get_bi_addr(base_instruct);
     for (std::size_t o = 0 ; o != arg_len.size(); o ++) {
-        std::size_t k = 0, g = 0;
+        std::size_t k = 0, g = 0, eq = 0;
         bool found_val = false;
         
         char * __tmp = static_cast<char *>(malloc(arg_len[o][1] * sizeof(char) + 1));
         memset(__tmp, '\0', arg_len[o][1] * sizeof(char) + 1);
         for (std::size_t i = arg_len[o][0] ; i != (arg_len[o][0] + arg_len[o][1] + arg_len[o][2]); i ++) {
-            
+            //if (this-> term_input[i] == EQULS) eq ++;
             if (this-> term_input[i] == EQULS || found_val) {
                 if (found_val) {
                     this-> current.bi_args_value[o].resize(

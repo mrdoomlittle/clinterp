@@ -18,8 +18,10 @@ int main() {
         std::free(tmp);
  
         std::cout << "base state: " << cl.is_base_instruct("qgdb") << std::endl;
-        if (cl.is_base_instruct("qgdb") && cl.is_bi_argument("you"))
+        if (cl.is_base_instruct("qgdb") && cl.is_bi_argument("you")) {
             cl.write_to_term("hello & & nice to\\nmeet you. &\n", "my name", "is mrdoomlittle", "12");
+            std::cout << cl.get_bi_arg_value("you") << std::endl; 
+        }
 return 0;
         //char *
 
